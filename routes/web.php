@@ -1,26 +1,17 @@
 <?php
 
 use App\Http\Controllers\PizzaController;
-
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// Customer-facing
+Route::view('/', 'welcome');
+Route::get('/pizzas/create', [PizzaController::class, 'create']);
+Route::post('/pizzas', [PizzaController::class, 'store']);
 
-Route::get('/', function () {
-    return view('welcome');
+// Staff-only (HTTP Basic, see App\Http\Middleware\AdminOnly)
+Route::middleware('admin')->group(function () {
+    Route::get('/pizzas', [PizzaController::class, 'index']);
+    Route::get('/pizzas/{pizza}', [PizzaController::class, 'show'])->whereNumber('pizza');
+    Route::patch('/pizzas/{pizza}/complete', [PizzaController::class, 'complete'])->whereNumber('pizza');
+    Route::delete('/pizzas/{pizza}', [PizzaController::class, 'destroy'])->whereNumber('pizza');
 });
-
-Route::get('/pizzas', [PizzaController::class, 'index']);
-Route::get('/pizzas/create', [PizzaController::class, 'create' ]);
-Route::post('/pizzas', [PizzaController::class, 'store' ] );
-Route::get('/pizzas/{id}', [PizzaController::class, 'show']);
-Route::delete('/pizzas/{id}', [PizzaController::class, 'destroy'] );

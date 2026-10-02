@@ -1,49 +1,51 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.layout')
 
-        <title>Laravel</title>
+@section('title', 'Order a pizza')
 
-        @extends('layouts.layout')
+@section('content')
+    <h1>Build your pizza</h1>
 
-        @section('content')
-        <div class="wrapper create-pizza">
-  <h1>Create a New Pizza</h1>
-  <form action="/pizzas" method="POST">
-  @csrf
-    <label for="name">Your name:</label>
-    <input type="text" name="name" id="name" required>
-    <label for="type">Choose type of pizza:</label>
-    <select name="type" id="type">
-      <option value="margarita">Margarita</option>
-      <option value="hawaiian">Hawaiian</option>
-      <option value="veg supreme">Veg Supreme</option>
-      <option value="volcano">Volcano</option>
-    </select>
-    <label for="base">Choose crust:</label>
-    <select name="base" id="base">
-      <option value="thick">Thick</option>
-      <option value="thin & crispy">Thin & Crispy</option>
-      <option value="cheese crust">Cheese Crust</option>
-      <option value="garlic crust">Garlic Crust</option>
-    </select>
-    <fieldset>
-        <label>Extra toppings:</label>
-        <input type="checkbox" name="toppings[]" value="mushrooms">Mushrooms<br/>
-        <input type="checkbox" name="toppings[]" value="peppers">Peppers<br/>
-        <input type="checkbox" name="toppings[]" value="garlic">Garlic<br/>
-        <input type="checkbox" name="toppings[]" value="olives">Olives<br/>
-        <input type="checkbox" name="toppings[]" value="pepperoni">Pepperoni<br/>
+    @if ($errors->any())
+        <div class="errors">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
+    <form action="/pizzas" method="POST" class="card form">
+        @csrf
 
+        <label for="name">Your name</label>
+        <input type="text" name="name" id="name" value="{{ old('name') }}" maxlength="100" required>
 
+        <label for="type">Type of pizza</label>
+        <select name="type" id="type" required>
+            @foreach (\App\Models\Pizza::TYPES as $key => [$label, $price])
+                <option value="{{ $key }}" @selected(old('type') === $key)>{{ $label }} &ndash; ${{ $price }}</option>
+            @endforeach
+        </select>
 
+        <label for="base">Crust</label>
+        <select name="base" id="base" required>
+            @foreach (\App\Models\Pizza::CRUSTS as $key => [$label, $extra])
+                <option value="{{ $key }}" @selected(old('base') === $key)>{{ $label }}{{ $extra ? " (+\${$extra})" : '' }}</option>
+            @endforeach
+        </select>
 
-    </fieldset>
-    <input type="submit" value="Order Pizza">
-  </form>
-</div>
+        <fieldset>
+            <legend>Extra toppings (+${{ \App\Models\Pizza::TOPPING_PRICE }} each)</legend>
+            @foreach (\App\Models\Pizza::TOPPINGS as $topping)
+                <label class="check">
+                    <input type="checkbox" name="toppings[]" value="{{ $topping }}" @checked(in_array($topping, old('toppings', [])))>
+                    {{ ucfirst($topping) }}
+                </label>
+            @endforeach
+        </fieldset>
 
+        <button type="submit" class="btn">Place order</button>
+        <p class="muted">Prices in BBD.</p>
+    </form>
 @endsection

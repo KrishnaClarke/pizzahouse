@@ -1,39 +1,50 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.layout')
 
-        <title>Laravel</title>
+@section('title', 'Order #'.$pizza->id)
 
-        @extends('layouts.layout')
+@section('content')
+    <a href="/pizzas" class="back">&larr; Back to all orders</a>
 
-        @section('content')
+    <div class="card">
+        <h1>Order #{{ $pizza->id }} &ndash; {{ $pizza->name }}</h1>
+        <p><span class="badge {{ $pizza->status }}">{{ ucfirst($pizza->status) }}</span></p>
 
-                                <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">Pizza House<br/>
-                       </h2>
+        <dl>
+            <dt>Type</dt>
+            <dd>{{ \App\Models\Pizza::TYPES[$pizza->type][0] ?? $pizza->type }}</dd>
+            <dt>Crust</dt>
+            <dd>{{ \App\Models\Pizza::CRUSTS[$pizza->base][0] ?? $pizza->base }}</dd>
+            <dt>Extra toppings</dt>
+            <dd>
+                @if (count($pizza->toppings ?? []))
+                    <ul>
+                        @foreach ($pizza->toppings as $topping)
+                            <li>{{ ucfirst($topping) }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    None
+                @endif
+            </dd>
+            <dt>Total</dt>
+            <dd>${{ number_format($pizza->price, 2) }} BBD</dd>
+            <dt>Ordered</dt>
+            <dd>{{ $pizza->created_at->diffForHumans() }}</dd>
+        </dl>
 
-                                <div class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                                   <h1 class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Order from {{$pizza->name}}</h1>
-                                    <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Type - {{$pizza->type}}</p>
-                                    <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Base - {{$pizza->base}}</p>
-                                    <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Extra toppings:</p>
-                                <ul class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-
-                                    @foreach($pizza->toppings as $topping)
-                                    
-                                    <li class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{$topping}}</li>
-                                    @endforeach
-                                    
-                                </ul>
-                                <form action="/pizzas/{{$pizza->id}}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button>Complete Order</button>
-                                </form>
-                                </div>
-                              
-                                  <a href="/pizzas" class="back"><- Back to all pizzas </a>
-                            </div>
-
+        <div class="actions">
+            @unless ($pizza->isCompleted())
+                <form action="/pizzas/{{ $pizza->id }}/complete" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <button class="btn">Complete order</button>
+                </form>
+            @endunless
+            <form action="/pizzas/{{ $pizza->id }}" method="POST" onsubmit="return confirm('Cancel this order?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn danger">Cancel order</button>
+            </form>
+        </div>
+    </div>
 @endsection
