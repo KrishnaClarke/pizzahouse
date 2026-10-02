@@ -21,6 +21,7 @@ class PizzaFactory extends Factory
             'toppings' => $toppings,
             'price' => Pizza::calculatePrice($type, $base, $toppings),
             'status' => Pizza::STATUS_PENDING,
+            'created_at' => fake()->dateTimeBetween('-13 days', 'now'),
         ];
     }
 

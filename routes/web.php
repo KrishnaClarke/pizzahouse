@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PizzaController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,7 @@ Route::post('/pizzas', [PizzaController::class, 'store']);
 
 // Staff-only (HTTP Basic, see App\Http\Middleware\AdminOnly)
 Route::middleware('admin')->group(function () {
+    Route::get('/dashboard', DashboardController::class);
     Route::get('/pizzas', [PizzaController::class, 'index']);
     Route::get('/pizzas/{pizza}', [PizzaController::class, 'show'])->whereNumber('pizza');
     Route::patch('/pizzas/{pizza}/complete', [PizzaController::class, 'complete'])->whereNumber('pizza');

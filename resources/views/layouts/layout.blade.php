@@ -12,12 +12,13 @@
     <header class="site-header">
         <a href="/" class="brand">🍕 Pizza House</a>
         <nav>
-            <a href="/pizzas/create">Order</a>
-            <a href="/pizzas">Staff orders</a>
+            <a href="/pizzas/create">Order pizza</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/pizzas">Orders</a>
         </nav>
     </header>
 
-    <main class="container">
+    <main class="container @yield('main_class')">
         @if (session('mssg'))
             <div class="flash">{{ session('mssg') }}</div>
         @endif

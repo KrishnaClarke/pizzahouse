@@ -6,6 +6,7 @@ A small Laravel 10 app for a made-up Barbadian pizza shop. Customers build a piz
 
 - Order form with server-side validation and price calculation (BBD)
 - Staff-only order list, detail, **complete** and **cancel** actions, protected with HTTP Basic auth
+- Staff dashboard at `/dashboard`: totals, revenue vs open order value, orders and revenue per day (last 14 days), and breakdowns by pizza type, crust and topping
 - Eloquent model with array-cast toppings, a factory and seeder for demo data
 - Feature tests covering ordering, validation, auth and staff actions
 
@@ -27,7 +28,7 @@ php artisan serve
 ```
 
 - Customers: http://localhost:8000
-- Staff: http://localhost:8000/pizzas (log in with `ADMIN_USER` / `ADMIN_PASSWORD`)
+- Staff: http://localhost:8000/dashboard (orders list at /pizzas) (log in with `ADMIN_USER` / `ADMIN_PASSWORD`)
 
 ## Tests
 
@@ -46,4 +47,3 @@ Base price by pizza type, plus a crust surcharge (cheese +$8, garlic +$5) and $3
 - Real user accounts (Laravel Breeze) instead of HTTP Basic
 - Delivery address and phone number
 - Order status emails
-- Charts of orders and revenue for the staff page
